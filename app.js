@@ -392,7 +392,9 @@ const Forms = (function () {
         }));
 
         console.log('✅ Account created successfully');
-        alert('✨ Account created successfully!\n\n👋 Welcome ' + fullName + '!\n\nYour account has been created.');
+        
+        // Show premium success modal instead of alert
+        showPremiumSuccessModal('✨ Account Created!', 'Welcome, <strong>' + fullName + '</strong>! 👋<br><br>Your account has been created successfully. Explore the AdhyatamBuzz community and share your wisdom.', fullName);
 
         form.reset();
 
