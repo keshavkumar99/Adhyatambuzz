@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AdhyatamBuzz - AI Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/jpeg" href="your-logo.jpeg" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto;
+      background: linear-gradient(135deg, #0f1829 0%, #1a2847 50%, #141f36 100%);
+      color: #f7f9fb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(0, 245, 255, 0.05), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(255, 90, 150, 0.05), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(15, 24, 41, 0.8), rgba(20, 32, 51, 0.6));
+      border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(15px);
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 245, 255, 0.1);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .close-btn {
+      background: rgba(255, 90, 150, 0.2);
+      border: 1px solid rgba(255, 90, 150, 0.4);
+      color: #ff5aa6;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 90, 150, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .chatbot-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1000px;
+      margin: 2rem auto;
+      width: 100%;
+      padding: 0;
+      background: linear-gradient(135deg, rgba(20, 24, 41, 0.4), rgba(31, 45, 69, 0.3));
+      border: 1px solid rgba(0, 245, 255, 0.15);
+      border-radius: 2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 60px rgba(0, 245, 255, 0.05);
+      position: relative;
+      z-index: 5;
+    }
+
+    .chat-header {
+      text-align: center;
+      padding: 2rem 2rem 1.5rem;
+      margin-bottom: 0;
+      border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+      background: linear-gradient(180deg, rgba(0, 245, 255, 0.03), transparent);
+    }
+
+    .chat-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #00f5ff, #ff5aa6, #7c6cff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .chat-header p {
+      color: #b5bcc8;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      background: transparent;
+    }
+
+    .message {
+      display: flex;
+      gap: 1rem;
+      animation: slideInUp 0.4s ease-out;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.bot {
+      justify-content: flex-start;
+    }
+
+    .message-content {
+      max-width: 75%;
+      padding: 1rem 1.2rem;
+      border-radius: 1.2rem;
+      line-height: 1.7;
+      word-wrap: break-word;
+      font-size: 0.95rem;
+    }
+
+    .user .message-content {
+      background: linear-gradient(135deg, #00f5ff, #ff5aa6);
+      color: #141829;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0, 245, 255, 0.2);
+      border-radius: 1.2rem 1.2rem 0.2rem 1.2rem;
+    }
+
+    .bot .message-content {
+      background: linear-gradient(135deg, rgba(124, 108, 255, 0.15), rgba(0, 245, 255, 0.1));
+      border: 1px solid rgba(0, 245, 255, 0.25);
+      color: #f7f9fb;
+      border-radius: 1.2rem 1.2rem 1.2rem 0.2rem;
+      box-shadow: 0 4px 15px rgba(0, 245, 255, 0.05);
+      backdrop-filter: blur(10px);
+    }
+
+    .bot .message-content strong {
+      color: #00f5ff;
+      font-weight: 700;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 0.4rem;
+      padding: 1rem;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00f5ff;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .input-area {
+      display: flex;
+      gap: 0.8rem;
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(255, 90, 150, 0.03));
+      padding: 1.2rem 2rem;
+      border: 1px solid rgba(0, 245, 255, 0.2);
+      border-radius: 0 0 2rem 2rem;
+      border-top: none;
+      backdrop-filter: blur(10px);
+    }
+
+    input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(0, 245, 255, 0.2);
+      color: #f7f9fb;
+      padding: 0.9rem 1.2rem;
+      border-radius: 1rem;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+      color: #7a8799;
+    }
+
+    input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: #00f5ff;
+      box-shadow: 0 0 25px rgba(0, 245, 255, 0.2), inset 0 0 10px rgba(0, 245, 255, 0.05);
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, #00f5ff, #ff5aa6, #7c6cff);
+      color: #141829;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 30px rgba(0, 245, 255, 0.25);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+    }
+
+    .send-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0, 245, 255, 0.35);
+    }
+
+    .send-btn:hover::before {
+      left: 100%;
+    }
+
+    .send-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .welcome-message {
+      text-align: center;
+      padding: 2rem;
+      color: #b5bcc8;
+    }
+
+    .welcome-message h2 {
+      color: #00f5ff;
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .welcome-message p {
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .suggested-questions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .suggested-q {
+      padding: 1rem;
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(124, 108, 255, 0.05));
+      border: 1px solid rgba(0, 245, 255, 0.25);
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+      color: #f7f9fb;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 245, 255, 0.05);
+    }
+
+    .suggested-q:hover {
+      background: linear-gradient(135deg, rgba(0, 245, 255, 0.15), rgba(124, 108, 255, 0.1));
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 245, 255, 0.15), 0 0 20px rgba(0, 245, 255, 0.1);
+      border-color: rgba(0, 245, 255, 0.4);
+    }
+
+    .no-match-message {
+      padding: 1rem;
+      background: rgba(255, 90, 150, 0.1);
+      border: 1px solid rgba(255, 90, 150, 0.3);
+      border-radius: 0.8rem;
+      color: #ff5aa6;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 245, 255, 0.2);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 245, 255, 0.4);
+    }
+
+    @media (max-width: 1200px) {
+      .chatbot-container {
+        max-width: 900px;
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+      }
+
+      .chat-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .message-content {
+        max-width: 80%;
+      }
+    }
+
+    /* Tablet optimizations */
+    @media (max-width: 900px) and (min-width: 769px) {
+      .chatbot-container {
+        max-width: 95%;
+        margin: 1.2rem auto;
+      }
+
+      .messages-container {
+        padding: 1.2rem;
+      }
+
+      .input-area {
+        padding: 1rem 1.2rem;
+      }
+
+      .suggested-questions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
+
+      header {
+        padding: 1rem 1.5rem;
+      }
+
+      .logo-section {
+        gap: 0.75rem;
+      }
+
+      .logo-section div:first-child {
+        font-size: 1.8rem !important;
+      }
+
+      .logo-text {
+        font-size: 0.9rem !important;
+      }
+
+      .close-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      .chatbot-container {
+        max-width: 100%;
+        margin: 0.8rem 0.5rem;
+        border-radius: 1.2rem;
+        padding: 0;
+        height: calc(100vh - 100px);
+        max-height: calc(100vh - 100px);
+      }
+
+      .chat-header {
+        padding: 1.5rem 1.5rem 1rem;
+        margin-bottom: 0;
+      }
+
+      .chat-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .chat-header p {
+        font-size: 0.85rem;
+      }
+
+      .messages-container {
+        padding: 1.5rem;
+        gap: 1rem;
+      }
+
+      .message-content {
+        max-width: 85%;
+        padding: 0.9rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 1rem;
+      }
+
+      .user .message-content {
+        border-radius: 1rem 1rem 0.15rem 1rem;
+      }
+
+      .bot .message-content {
+        border-radius: 1rem 1rem 1rem 0.15rem;
+      }
+
+      .input-area {
+        flex-direction: row;
+        padding: 0.8rem 1rem;
+        gap: 0.6rem;
+        border-radius: 0 0 1.2rem 1.2rem;
+        background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(255, 90, 150, 0.04));
+      }
+
+      input {
+        padding: 0.75rem 0.9rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+        flex: 1;
+      }
+
+      .send-btn {
+        width: auto;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .welcome-message {
+        padding: 1.5rem;
+      }
+
+      .welcome-message h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .welcome-message p {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .suggested-questions {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin-top: 1rem;
+      }
+
+      .suggested-q {
+        padding: 0.9rem;
+        font-size: 0.8rem;
+      }
+
+      .no-match-message {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        font-size: 14px;
+      }
+
+      header {
+        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .logo-section {
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .logo-section div:first-child {
+        font-size: 1.5rem !important;
+      }
+
+      .logo-text {
+        font-size: 0.8rem !important;
+      }
+
+      .close-btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+        width: 100%;
+      }
+
+      .chatbot-container {
+        margin: 0.5rem 0;
+        border-radius: 0.8rem;
+      }
+
+      .chat-header {
+        padding: 1rem 1rem 0.8rem;
+      }
+
+      .chat-header h1 {
+        font-size: 1.2rem;
+      }
+
+      .chat-header p {
+        font-size: 0.8rem;
+        line-height: 1.4;
+      }
+
+      .messages-container {
+        padding: 1rem;
+        gap: 0.8rem;
+      }
+
+      .message {
+        gap: 0.6rem;
+      }
+
+      .message-content {
+        max-width: 90%;
+        padding: 0.8rem 0.9rem;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        border-radius: 0.9rem;
+      }
+
+      .input-area {
+        padding: 0.8rem 1rem;
+        gap: 0.6rem;
+        border-radius: 0 0 0.8rem 0.8rem;
+      }
+
+      input {
+        padding: 0.7rem 0.9rem;
+        font-size: 16px;
+      }
+
+      .send-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.75rem;
+        letter-spacing: 0px;
+      }
+
+      .welcome-message {
+        padding: 1.2rem 1rem;
+      }
+
+      .welcome-message h2 {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .welcome-message p {
+        font-size: 0.85rem;
+        margin-bottom: 0.6rem;
+      }
+
+      .suggested-questions {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+        margin-top: 0.8rem;
+      }
+
+      .suggested-q {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+      }
+
+      .typing-indicator {
+        padding: 0.8rem;
+        gap: 0.3rem;
+      }
+
+      .typing-dot {
+        width: 6px;
+        height: 6px;
+      }
+    }
+
+    /* Extra large screens */
+    @media (min-width: 1400px) {
+      .chatbot-container {
+        max-width: 1100px;
+      }
+
+      .chat-header h1 {
+        font-size: 2.2rem;
+      }
+
+      .message-content {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Load API Configuration -->
+  <script src="api-config.js"></script>
+
+  <header>
+    <div class="logo-section">
+      <div style="font-family: 'Samarkan', cursive; font-size: 2.2rem; font-weight: 900; background: conic-gradient(from 120deg, rgba(0, 245, 255, 0.9), rgba(255, 90, 150, 0.95), #7c6cff, rgba(0, 245, 255, 0.9)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 30px rgba(0, 245, 255, 0.3); animation: aumGlow 3s ease-in-out infinite; letter-spacing: 0.15em;">AUM</div>
+      <div>
+        <div class="logo-text" style="font-size: 1.05rem; letter-spacing: 0.08em; background: linear-gradient(90deg, #00f5ff, #ff5aa6); -webkit-background-clip: text; background-clip: text; color: transparent;">Solalogic</div>
+        <div style="font-size: 0.7rem; color: #b5bcc8; margin-top: 2px;">AI Wisdom Guide</div>
+      </div>
+    </div>
+    <button class="close-btn" onclick="window.location.href='index.html'">← Back Home</button>
+  </header>
+  
+  <style>
+    @keyframes botPulse {
+      0%, 100% { box-shadow: 0 6px 22px rgba(0, 245, 255, 0.2), inset 0 3px 10px rgba(255, 255, 255, 0.04); }
+      50% { box-shadow: 0 8px 30px rgba(0, 245, 255, 0.35), inset 0 3px 10px rgba(255, 255, 255, 0.06); }
+    }
+  </style>
+
+  <div class="chatbot-container">
+    <div class="chat-header">
+      <h1 style="background: linear-gradient(90deg, #00f5ff, #ff5aa6); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 30px rgba(0, 245, 255, 0.2);">💫 Solalogic Wisdom</h1>
+      <p>Sri Keshav's wisdom for Gen Z & Gen Alpha. Ask about identity, purpose, relationships, mental health, family, social media - all from a spiritual & science perspective. Your questions deserve real answers.</p>
+    </div>
+
+    <div class="messages-container" id="messagesContainer">
+      <div class="message bot">
+        <div class="message-content" style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(255, 90, 150, 0.08)); border: 1px solid rgba(0, 245, 255, 0.2); box-shadow: 0 8px 20px rgba(0, 245, 255, 0.1);">
+          <strong style="font-size: 1.1rem; color: #00f5ff;">🙏 Namaskaram</strong><br><br>
+          I'm Solalogic, here to share Sri Keshav's wisdom directly with you. Confused about identity? Lost on purpose? Struggling with family? Heartbroken? Social media addiction? Mental health crisis? Ask me anything. I have answers from ancient Vedas + modern science + real-life perspective. Your questions matter. Let's talk. 🕉️💙
+        </div>
+      </div>
+
+      <div class="welcome-message">
+        <h2>Suggested Topics</h2>
+        <div class="suggested-questions">
+          <div class="suggested-q" onclick="sendMessage('Who am I really?')">Identity & Self</div>
+          <div class="suggested-q" onclick="sendMessage('What is my life purpose?')">Purpose & Career</div>
+          <div class="suggested-q" onclick="sendMessage('I am struggling with anxiety')">Mental Health Help</div>
+          <div class="suggested-q" onclick="sendMessage('How to deal with family conflict?')">Family Issues</div>
+          <div class="suggested-q" onclick="sendMessage('Social media is destroying me')">Social Media Trap</div>
+          <div class="suggested-q" onclick="sendMessage('I am stressed about exams')">Pressure & Expectations</div>
+          <div class="suggested-q" onclick="sendMessage('My heart is broken')">Heartbreak & Love</div>
+          <div class="suggested-q" onclick="sendMessage('Tell me about Rigveda and sound therapy')">Rigveda Mantras</div>
+          <div class="suggested-q" onclick="sendMessage('What is Yajurveda breathing technique?')">Yajurveda Pranayama</div>
+          <div class="suggested-q" onclick="sendMessage('Tell me about the 4 Vedas mental health system')">4 Vedas System</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input 
+        type="text" 
+        id="userInput" 
+        placeholder="Ask your question here..." 
+        onkeypress="event.key === 'Enter' && sendMessage()"
+      />
+      <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // ========== CONFIGURATION ==========
+    // API keys are loaded from api-config.js
+    let preferredAPI = 'local'; // 'openai', 'gemini', or 'local'
+
+    // Check if APIs are configured
+    function checkAPIsConfiguration() {
+      if (typeof OPENAI_API_KEY !== 'undefined' && OPENAI_API_KEY && OPENAI_API_KEY.trim()) {
+        preferredAPI = 'openai';
+        console.log('✅ OpenAI API configured');
+      } else if (typeof GEMINI_API_KEY !== 'undefined' && GEMINI_API_KEY && GEMINI_API_KEY.trim()) {
+        preferredAPI = 'gemini';
+        console.log('✅ Gemini API configured');
+      } else {
+        console.log('ℹ️ Using local knowledge base (no API keys configured)');
+      }
+    }
+
+    // ========== KNOWLEDGE BASE ==========
+    const knowledgeBase = {
+      "clarity": {
+        keywords: ["clarity", "clear", "confused", "confusion", "understand"],
+        response: "Solalogic teaches that clarity comes when you stop running from yourself. Stillness is not laziness, but presence and awareness. In a world that demands constant motion, stillness becomes your superpower. Clarity emerges when you pause your external motion and awaken your internal wisdom."
+      },
+      "stillness": {
+        keywords: ["stillness", "still", "quiet", "peace", "calm"],
+        response: "The Art of Being Still is one of Solalogic's core teachings. Stillness is not avoidance, but awareness. When you stop running from yourself, you finally meet the person you've been looking for. This isn't about laziness—it's about presence and mindfulness in every moment."
+      },
+      "authentic_voice": {
+        keywords: ["authentic", "voice", "real", "genuine", "yourself", "true"],
+        response: "Finding Your Authentic Voice is essential. Stop imitating the world—your unique perspective is what the world is waiting to hear. Your raw thoughts, your honest questions, your genuine confusion—these are your superpowers. Solalogic believes every voice deserves to be heard and respected."
+      },
+      "confusion": {
+        keywords: ["confusion", "confused", "confused youth", "clarity through confusion"],
+        response: "Confusion is not a roadblock—it's a signpost. Learn to read the messages your uncertainty is sending. Solalogic teaches that being confused means you're thinking deeply. Your late-night questions are not weakness; they're wisdom trying to emerge. Embrace your confusion as part of your journey."
+      },
+      "adhyatambuzz": {
+        keywords: ["adhyatambuzz", "platform", "purpose", "mission"],
+        response: "AdhyatamBuzz is a sanctuary for young minds. It's not a noisy social network—just a focused space where thoughts are seen, respected, and shaped into something meaningful. Your raw thoughts become refined wisdom. Late-night journal entries transform into chapters of living books. Every voice is valued and amplified."
+      },
+      "gen_z": {
+        keywords: ["gen z", "gen alpha", "youth", "young", "generation"],
+        response: "Gen Z and Gen Alpha are more conscious than they think. You're searching for purpose, asking hard questions, and seeking authentic connections. Solalogic creates a space where you can explore your deepest thoughts without judgment. Your confusion is clarity in progress. Your questions are wisdom waiting to be refined."
+      },
+      "books": {
+        keywords: ["book", "rectification", "confused youth", "blissness"],
+        response: "Solalogic has been sharing wisdom including 'Rectification Within Itself' and 'A Confused Youth on Their Prime'. These teachings carry collective youth reflections, edited and guided with respect for your original voice. They transform raw thoughts into meaningful wisdom that speaks to Gen Z and beyond."
+      },
+      "spiritual": {
+        keywords: ["spiritual", "spirituality", "orator", "wisdom", "truth"],
+        response: "Solalogic is a spiritual guide and mentor dedicated to helping young minds find clarity through wisdom. Spirituality isn't about perfection—it's about awareness, presence, and truth. Every genuine question, every honest moment, every authentic thought is a spiritual journey."
+      },
+      "listen": {
+        keywords: ["listen", "heard", "voice", "respect", "valued"],
+        response: "Solalogic's core mission is to listen deeply. I hear your confusion, validate your questions, and respect your journey. Through AdhyatamBuzz, every voice is listened to with genuine care. Your thoughts matter. Your perspective counts. Your journey is worthy of being heard and refined into wisdom."
+      },
+      "journey": {
+        keywords: ["journey", "path", "growth", "transformation"],
+        response: "Your journey is unique and valuable. Whether you're on a path of self-discovery, spiritual growth, or simply trying to understand yourself better, Solalogic creates space for that exploration. Every question is part of your journey. Every moment of confusion is a step toward clarity. Every raw thought can become refined wisdom."
+      },
+      "rigveda_science": {
+        keywords: ["rigveda", "rig veda", "energy", "cosmic", "vibration", "sound", "therapy"],
+        response: "<strong>🎵 Rigveda & Sound Vibration Therapy (Science-Spiritual Connect)</strong><br><br><strong>Ancient Secret:</strong> Rigveda teaches about 'Nad Brahma' (sound is the creator)<br><br><strong>Scientific Correlation:</strong><br>• Human body is 70% water (water responds to vibrations)<br>• Specific sound frequencies alter brainwaves:<br>  - 40Hz = Gamma (focus, clarity) → Agni (digestive fire = mental processing)<br>  - 10Hz = Alpha (calm) → Soma (nectar = relaxation hormone)<br>  - 4Hz = Delta (deep sleep) → Prakriti (nature's balance)<br><br><strong>Vedic Mantra = Sound Medicine:</strong><br>• ॐ (Om) = 432Hz (earth's heartbeat frequency)<br>• Scientific proof: 432Hz increases dopamine by 15% (natural antidepressant)<br>• Chanting activates vagus nerve → parasympathetic response<br><br><strong>For Mental Health:</strong><br>✓ Depression: Chant ॐ for 5-10 min → releases serotonin<br>✓ Anxiety: Rigvedic mantras calm amygdala (fear center)<br>✓ Insomnia: Low frequency chanting triggers delta waves<br>✓ Stress: Sound therapy reduces cortisol by 25%<br><br><strong>Practice:</strong> Chant ॐ in morning for 108 times (sacred number) = complete neural reset"
+      },
+      "yajurveda_action": {
+        keywords: ["yajurveda", "yajur veda", "action", "karma", "breathing", "technique", "pranayama"],
+        response: "<strong>🌬️ Yajurveda & Breathwork Science (Action-Based Healing)</strong><br><br><strong>Ancient Secret:</strong> Yajurveda teaches 'Pranayama' (life force control)<br><br><strong>Scientific Proof:</strong><br>• Breathing directly controls nervous system<br>• Slow breathing: ↓ Heart rate, ↓ Cortisol, ↑ Serotonin<br>• 6 breaths/minute = optimal healing frequency<br><br><strong>Vedic Techniques = Modern Therapy:</strong><br>1. <strong>Nadi Shodhana (Alternate Nostril)</strong><br>   • Balances left-right brain hemispheres<br>   • Heals: Anxiety, OCD, racing thoughts<br>   • Scientific basis: Activates parasympathetic nervous system<br><br>2. <strong>Ujjayi Breathing (Ocean Breath)</strong><br>   • Calms amygdala (emotion control center)<br>   • Heals: Depression, anger management<br>   • Creates 'vagal tone' = emotional regulation<br><br>3. <strong>Bhramari (Bee Breath)</strong><br>   • Vibration therapy stimulates pineal gland<br>   • Increases melatonin (sleep) & serotonin (mood)<br>   • Heals: Insomnia, anxiety, overthinking<br><br><strong>Yajurveda Wisdom:</strong> 'Karma Yoga' = Purposeful action reduces depression<br>• Action without attachment heals rumination<br>• Doing helps more than thinking<br><br><strong>Daily Practice:</strong> 10 min breathwork + 30 min purposeful action = mental reset"
+      },
+      "samaveda_healing": {
+        keywords: ["samaveda", "sama veda", "healing", "music", "rhythm", "balance", "harmony"],
+        response: "<strong>🎶 Samaveda & Musical Healing (Rhythm of Recovery)</strong><br><br><strong>Ancient Secret:</strong> Samaveda is the 'Veda of Music' - teaches healing through rhythm & melody<br><br><strong>Scientific Connection:</strong><br>• Brain has default frequency = 40Hz (gamma state)<br>• Samaveda ragas (musical scales) synchronize brainwaves<br>• Music therapy reduces anxiety by 37% (clinical studies)<br><br><strong>7 Ragas for Mental Health:</strong><br>1. <strong>Raga Bhairav (Morning)</strong><br>   • 60-80 Hz frequency = energy & clarity<br>   • Heals: Depression, lethargy, low motivation<br>   • Scientific: Increases dopamine & noradrenaline<br><br>2. <strong>Raga Yaman (Evening)</strong><br>   • 30-40 Hz frequency = calm focus<br>   • Heals: Racing thoughts, anxiety<br>   • Balances: Left-right brain hemispheres<br><br>3. <strong>Raga Jor (Night)</strong><br>   • 4-8 Hz frequency = deep relaxation<br>   • Heals: Insomnia, PTSD, trauma<br>   • Triggers delta waves (healing sleep)<br><br>4. <strong>Raga Bhimpalas</strong> = Mood elevation<br>5. <strong>Raga Tilak Kamod</strong> = Emotional release<br>6. <strong>Raga Malhar</strong> = Emotional balance<br>7. <strong>Raga Darbari Kanada</strong> = Deep meditation<br><br><strong>Why It Works:</strong><br>• Rhythm synchronizes heart rate with brain<br>• Melody activates hippocampus (memory healing)<br>• Tonal harmony triggers oxytocin (bonding hormone)<br><br><strong>Practice:</strong> Listen to classical Samaveda ragas for 20-30 min daily"
+      },
+      "atharvaveda_power": {
+        keywords: ["atharvaveda", "atharva veda", "protection", "power", "immunity", "energy", "root"],
+        response: "<strong>⚡ Atharvaveda & Root Energy Healing (Deep Protection)</strong><br><br><strong>Ancient Secret:</strong> Atharvaveda teaches practical health secrets & 'Grounding' energy<br><br><strong>Scientific Foundation:</strong><br>• Feet contain 200,000+ nerve endings = entire nervous system map<br>• Earth's negative ions heal mental illness (earthing science)<br>• Atharvaveda's 'Prithvi Tatva' (earth element) = root chakra healing<br><br><strong>Atharvaveda Techniques for Mental Illness:</strong><br><br>1. <strong>Earthing/Grounding (Root Healing)</strong><br>   • Walk barefoot on earth for 20 min<br>   • Scientific proof: Reduces cortisol by 30% in 30 minutes<br>   • Heals: Anxiety, depression, scattered mind<br>   • Mechanism: Earth's electrons neutralize free radicals<br><br>2. <strong>Atharva Mantras for Protection</strong><br>   • 'Om Prithvi Namah' = Grounding mantra<br>   • Activates: Root chakra, parasympathetic nervous system<br>   • Heals: Existential anxiety, worthlessness, fear<br>   • Scientific: Creates theta waves (deep calm)<br><br>3. <strong>Ayurvedic Grounding (Atharvaveda Roots)</strong><br>   • Ashwagandha: Reduces cortisol by 26% (clinical proven)<br>   • Brahmi: Enhances GABA (natural anti-anxiety)<br>   • Turmeric: Curcumin = brain anti-inflammatory<br>   • Triphala: Gut-brain axis healing<br><br>4. <strong>Dietary Grounding (Prithvi Foods)</strong><br>   • Root vegetables (carrots, beets, potatoes)<br>   • Nuts & seeds (grounding proteins)<br>   • Ghee (healthy fat for brain healing)<br>   • Black sesame (mineral-rich, grounding)<br><br><strong>Why Atharvaveda Works for Mental Illness:</strong><br>• Addresses ROOT cause (not just symptoms)<br>• 'Prithvi' energy = stability & security<br>• Heals: OCD, panic disorders, floating anxiety<br><br><strong>Daily Protocol:</strong><br>• Morning: Barefoot earthing + Ashwagandha<br>• Mantra: 'Om Prithvi Namah' 7x daily<br>• Food: Add root vegetables + ghee<br>• Result: Grounded, protected, mentally strong"
+      },
+      "vedic_mental_health": {
+        keywords: ["veda", "vedic", "ancient", "spiritual healing", "holistic", "mental wellness"],
+        response: "<strong>🕉️ The 4 Vedas: Complete Mental Health System</strong><br><br><strong>How Ancient India Cured Mental Illness (Before Modern Medicine):</strong><br><br><strong>1️⃣ RIGVEDA - Sound Therapy</strong><br>   ➜ Problem: Mental fog, confusion<br>   ➜ Solution: Mantra chanting (ॐ, Gayatri)<br>   ➜ Science: 432Hz activates prefrontal cortex<br>   ➜ Result: Clarity in 10 minutes<br><br><strong>2️⃣ YAJURVEDA - Action & Breathing</strong><br>   ➜ Problem: Anxiety, panic, racing thoughts<br>   ➜ Solution: Pranayama + Purposeful action<br>   ➜ Science: Vagus nerve activation<br>   ➜ Result: Nervous system reset<br><br><strong>3️⃣ SAMAVEDA - Musical Healing</strong><br>   ➜ Problem: Depression, emotional numbness<br>   ➜ Solution: Classical ragas, rhythm therapy<br>   ➜ Science: Brainwave synchronization<br>   ➜ Result: Natural dopamine release<br><br><strong>4️⃣ ATHARVAVEDA - Grounding & Protection</strong><br>   ➜ Problem: Existential fear, worthlessness<br>   ➜ Solution: Earthing, Ayurvedic herbs<br>   ➜ Science: Earth's electrons heal inflammation<br>   ➜ Result: Deep security & stability<br><br><strong>The Complete Protocol:</strong><br><strong>Morning:</strong> Rigveda (ॐ chanting) → Yajurveda (Pranayama)<br><strong>Day:</strong> Purposeful action + Samaveda (music)<br><strong>Evening:</strong> Samaveda (ragas) → Earthing<br><strong>Night:</strong> Atharvaveda (grounding herbs)<br><br><strong>30-Day Transformation:</strong><br>✓ Week 1: Mental clarity & calmness<br>✓ Week 2: Anxiety & panic reduced by 60%<br>✓ Week 3: Depression lifts, energy increases<br>✓ Week 4: Stable, grounded, mentally resilient<br><br><strong>Why This Works Better Than Medication:</strong><br>• Addresses ROOT CAUSE (not just symptoms)<br>• No side effects (only benefits)<br>• Activates body's own healing system<br>• Science-backed ancient wisdom<br>• Sustainable long-term transformation<br><br><strong>Remember:</strong> The Vedas aren't religion—they're BIOLOGY for the mind. 💙"
+      },
+      "genz_identity": {
+        keywords: ["who am i", "identity", "finding myself", "purpose", "self-discovery", "belong", "authentic", "real self"],
+        response: "<strong>💫 Who Am I? Finding Your Authentic Self (Sri Keshav's Teaching)</strong><br><br><strong>Gen Z's Core Question:</strong> 'Who am I really, beyond what society expects?'<br><br><strong>Sri Keshav's Answer:</strong> You are NOT your parents' dreams, society's judgments, or social media image.<br><br><strong>From 'A Confused Youth on Their Prime':</strong><br>'You are the observer of your thoughts, not the thoughts themselves.'<br><br><strong>3-Step Self-Discovery Process:</strong><br><br>1️⃣ <strong>STOP Running From Yourself</strong><br>   • Every distraction = escape from yourself<br>   • Social media = Running from silence<br>   • Constant productivity = Running from inner emptiness<br>   • Sri Keshav's Teaching: 'Stillness reveals who you truly are'<br>   • Practice: 10 min daily silence (no phone)<br><br>2️⃣ <strong>Meet Your Authentic Voice</strong><br>   • Your 'confusion' is actually DEPTH<br>   • Your 'questioning' is actually WISDOM<br>   • Your 'sensitivity' is actually your POWER<br>   • From Book: 'Your raw thoughts are your superpower'<br>   • Action: Journal your real thoughts (not filtered)<br><br>3️⃣ <strong>Live From Inner Authority</strong><br>   • Stop seeking permission from others<br>   • Your validation comes from WITHIN<br>   • Authentic life = Less approval, more peace<br>   • Sri Keshav: 'When you stop imitating, you finally lead'<br>   • Result: Freedom, confidence, real relationships<br><br><strong>The Truth About Identity:</strong><br>You'll keep changing. That's growth.<br>You'll keep questioning. That's wisdom.<br>You'll keep evolving. That's life.<br><br><strong>Your identity isn't FIXED—it's FLUID. Embrace it. 💙</strong>"
+      },
+      "genz_purpose": {
+        keywords: ["what's my purpose", "career confusion", "passion", "meaning", "direction", "lost", "confused about future"],
+        response: "<strong>🎯 What's My Purpose? (Sri Keshav's Framework)</strong><br><br><strong>Gen Z Panic:</strong> 'Everyone has a purpose except me!'<br><br><strong>Sri Keshav's Truth:</strong> 'Purpose isn't found—it's CREATED.'<br><br><strong>From 'Rectification Within Itself':</strong><br>'Your purpose emerges when you align your natural talents with the world's needs.'<br><br><strong>4-Stage Purpose Discovery:</strong><br><br>1️⃣ <strong>Identify Your Natural Gifts (NOT Career Pressure)</strong><br>   ✓ What comes naturally to you?<br>   ✓ What would you do if money didn't matter?<br>   ✓ What do people thank you for?<br>   ✓ What breaks your heart in the world?<br>   → This is your PURPOSE CLUE<br><br>2️⃣ <strong>Test Small, Not Big</strong><br>   • Don't need a 'perfect' career at 22<br>   • Sri Keshav: 'Perfection kills possibility'<br>   • Action: Try 5 different things in 6 months<br>   • Learn what resonates vs. what doesn't<br><br>3️⃣ <strong>Purpose = Impact + Alignment</strong><br>   • NOT about money or status<br>   • IS about: Helping someone, solving a problem, creating beauty<br>   • Example: Teacher's purpose = Student's transformation<br>   • Your turn: Find where you make others' lives BETTER<br><br>4️⃣ <strong>Purpose Evolves (It's Not Fixed)</strong><br>   • At 22: Maybe teaching<br>   • At 30: Maybe writing<br>   • At 40: Maybe mentoring<br>   • ALL are valid purposes<br>   • Sri Keshav: 'Your life is a journey, not a destination'<br><br><strong>The Real Secret:</strong><br>Stop SEEKING purpose.<br>START CREATING it through action.<br><br><strong>Purpose comes from DOING, not thinking. 💪</strong>"
+      },
+      "genz_relationships": {
+        keywords: ["relationship", "heartbreak", "love", "toxic", "dating", "connection", "loneliness", "breakup"],
+        response: "<strong>💔 Heartbreak & Relationships (Sri Keshav's Wisdom)</strong><br><br><strong>Gen Z Truth:</strong> 'I'm in a toxic relationship but I can't leave.'<br><br><strong>Sri Keshav's Teaching:</strong> 'Love should expand you, not shrink you.'<br><br><strong>From His Books:</strong><br>'Real love is when two whole people choose each other—not two broken pieces trying to feel complete.'<br><br><strong>5 Signs of Healthy vs. Toxic Love:</strong><br><br>✅ <strong>HEALTHY LOVE:</strong><br>   • You're more YOU, not less<br>   • They celebrate your growth<br>   • Communication > Drama<br>   • You feel SECURE, not anxious<br>   • Individual space is respected<br><br>❌ <strong>TOXIC LOVE:</strong><br>   • You walk on eggshells<br>   • They isolate you from friends<br>   • Constant emotional/physical control<br>   • You feel DRAINED, not energized<br>   • Love is used as a weapon<br><br><strong>Sri Keshav's 3-Step Healing:</strong><br><br>1️⃣ <strong>Acknowledge the Truth</strong><br>   • Stop making excuses<br>   • 'They're going to change' = LIE<br>   • People change when THEY decide to<br>   • Not your job to fix them<br><br>2️⃣ <strong>Leave with Compassion (Not Anger)</strong><br>   • You don't hate them—you respect yourself<br>   • Clean break > Slow torture<br>   • Forgive them AND yourself<br>   • Move on with grace<br><br>3️⃣ <strong>Rebuild Your Solo Self</strong><br>   • 6 months ALONE to heal<br>   • Reconnect with your passions<br>   • Build strong friendships<br>   • Fall in love with YOUR LIFE first<br><br><strong>For Heartbreak (Any Relationship):</strong><br>• Pain = Proof you loved deeply (honor it)<br>• Cry, journal, feel it ALL<br>• Don't rush to 'move on'<br>• In 3-6 months, perspective comes<br>• One day you'll be grateful for the lesson<br><br><strong>Sri Keshav's Final Truth:</strong><br>'The best revenge isn't finding someone better—it's becoming your best self. Then the right person will find YOU.' 💙"
+      },
+      "genz_social_media": {
+        keywords: ["social media", "instagram", "comparison", "anxiety", "fomo", "fake", "followers", "tiktok", "snapchat"],
+        response: "<strong>📱 Social Media Trap (Sri Keshav on Digital Addiction)</strong><br><br><strong>Gen Z Reality:</strong> Spending 6+ hours daily on social media<br><br><strong>Sri Keshav's Teaching:</strong> 'Comparison is the thief of joy.'<br><br><strong>What's Really Happening:</strong><br>• Instagram shows highlight reels, not real life<br>• Every like = Dopamine hit (addictive)<br>• Comparison triggers depression & anxiety<br>• FOMO (Fear of Missing Out) = Manufactured anxiety<br>• From Book: 'Your life isn't less—your PERSPECTIVE is distorted'<br><br><strong>The Social Media Illusion:</strong><br>❌ They look perfect → They're struggling<br>❌ They have 10K followers → They're lonely<br>❌ They post happiness → They're filtering pain<br>❌ They seem successful → They're chasing validation<br><br><strong>The Hidden Cost:</strong><br>🔴 Anxiety: ↑ 40% since Instagram era<br>🔴 Depression: ↑ 60% in Gen Z<br>🔴 Body image issues: ↑ 70%<br>🔴 Sleep problems: ↑ 80% from late-night scrolling<br><br><strong>Sri Keshav's 30-Day Challenge:</strong><br><br>📵 <strong>Week 1:</strong> Delete Instagram, TikTok, Snapchat<br>   • First 3 days = HELL (withdrawal)<br>   • Days 4-7 = Clarity emerges<br><br>📖 <strong>Week 2:</strong> Replace with real activities<br>   • Read actual books (not stories)<br>   • Call real friends (not text)<br>   • Spend time OFFLINE<br><br>💭 <strong>Week 3-4:</strong> Observe the difference<br>   • Your anxiety is GONE<br>   • Your self-confidence is BACK<br>   • Your real life is BETTER<br><br><strong>If You Return to Social Media:</strong><br>✓ Follow only authentic creators<br>✓ Unfollow anyone who triggers comparison<br>✓ 30 min daily MAX<br>✓ NEVER scroll first thing in morning/last thing at night<br>✓ Use 'Do Not Disturb' mode aggressively<br><br><strong>The Truth About Followers:</strong><br>1M followers ≠ 1M real connections<br>100 real friends > 1M fake followers<br>Deep relationships > Surface validation<br><br><strong>Sri Keshav's Final Word:</strong><br>'Social media is a tool, not a life. Use it; don't let it use you. Your REAL life is waiting offline. 📵💙'"
+      },
+      "genz_pressure": {
+        keywords: ["pressure", "stressed", "competition", "exam stress", "parents", "expectation", "not good enough"],
+        response: "<strong>😫 Pressure & Expectations (Sri Keshav on Perfectionism)</strong><br><br><strong>Gen Z's Cry:</strong> 'I'm never good enough. Everyone expects too much.'<br><br><strong>Sri Keshav's Truth:</strong> 'Perfection is a prison. Excellence is a practice.'<br><br><strong>From 'A Confused Youth on Their Prime':</strong><br>'Your worth isn't determined by grades, achievements, or anyone's approval.'<br><br><strong>Where This Pressure Comes From:</strong><br>1️⃣ <strong>Parents:</strong> Their unfulfilled dreams → Your burden<br>2️⃣ <strong>Society:</strong> 'Success = Money + Status'<br>3️⃣ <strong>Social Media:</strong> Everyone looks perfect<br>4️⃣ <strong>School:</strong> Your value = Your GPA<br>5️⃣ <strong>Internal:</strong> You internalized ALL of above<br><br><strong>The Pressure Cycle:</strong><br>Expectation → Stress → Anxiety → Depression → Burnout<br><br><strong>Sri Keshav's Anti-Pressure Protocol:</strong><br><br>🛑 <strong>STEP 1: Stop the Comparison</strong><br>   • Others' success ≠ Your failure<br>   • Their path ≠ Your path<br>   • Your timing is YOUR timing<br>   • Action: Unfollow 'perfect' people<br><br>📊 <strong>STEP 2: Redefine Success</strong><br>   ❌ Old: 95% marks, IIT, CEO title<br>   ✅ New: Growth, learning, real relationships<br>   ✅ New: Being happy, not being impressive<br>   ✅ New: Small wins, not overnight success<br><br>😌 <strong>STEP 3: Permission to Be Average</strong><br>   • You can get 75% and still be GREAT<br>   • You can fail and still be WORTHY<br>   • You can be 'ordinary' and still be ENOUGH<br>   • Sri Keshav: 'Excellence comes from ease, not force'<br><br>💡 <strong>STEP 4: Create Your Own Metrics</strong><br>   Instead of: Grades, rank, followers<br>   Measure: How happy am I?<br>   Measure: How much am I learning?<br>   Measure: How kind am I being?<br>   Measure: How aligned with my values?<br><br><strong>For Exam Stress Specifically:</strong><br>• Exam = 3 hours. Your life = 80 years.<br>• One test doesn't define your intelligence<br>• Colleges care about fit, not perfection<br>• Life rewards those who adapt, not just those who score<br><br><strong>Action Plan:</strong><br>• Talk to your parents: 'I need your support, not expectations'<br>• Create boundaries: 'I will study 2 hours, not 8'<br>• Celebrate effort: 'I tried my best' > 'I got perfect marks'<br>• Remember: Your health > Your grades<br><br><strong>Sri Keshav's Final Word:</strong><br>'The pressure is real. But so is your power to say NO to it. You are not your score. You are not your achievements. You are YOU—and that's always been enough.' 💙"
+      },
+      "genz_mental_health": {
+        keywords: ["depression", "anxiety", "stressed", "overwhelmed", "help", "sad", "panic", "overthinking"],
+        response: "<strong>🆘 When You're Struggling (Sri Keshav's Compassionate Response)</strong><br><br><strong>Gen Z's Silent Cry:</strong> 'I don't even know what's wrong with me.'<br><br><strong>Sri Keshav's Opening:</strong> 'Your pain is valid. You're not alone. And this feeling will pass.'<br><br><strong>What Depression/Anxiety Actually Feels Like (Gen Z Version):</strong><br><br>🌫️ <strong>Depression (The Numb)</strong><br>   • Everything feels pointless<br>   • Even things you love feel boring<br>   • You want to disappear (not die, just... disappear)<br>   • Mornings are the hardest<br>   • You feel guilty for feeling bad<br><br>⚡ <strong>Anxiety (The Chaos)</strong><br>   • Your mind won't STOP<br>   • Worst case scenarios on repeat<br>   • Physical symptoms: racing heart, sweating<br>   • You're waiting for something bad to happen<br>   • Control everything to feel safe<br><br>🔄 <strong>Panic Attack (The Emergency)</strong><br>   • Feeling of dying (you're not)<br>   • Everything is too much<br>   • Body takes over (you can't control it)<br>   • Lasts 5-20 minutes (feels like forever)<br>   • Leaves you exhausted<br><br><strong>Sri Keshav's 5-Minute Emergency Relief:</strong><br><br>1️⃣ <strong>5-4-3-2-1 Grounding Technique</strong><br>   • 5 things you SEE<br>   • 4 things you TOUCH<br>   • 3 things you HEAR<br>   • 2 things you SMELL<br>   • 1 thing you TASTE<br>   → Brings you back to NOW<br><br>2️⃣ <strong>Box Breathing (Instant Calm)</strong><br>   • Breathe in 4 counts<br>   • Hold 4 counts<br>   • Breathe out 4 counts<br>   • Hold 4 counts<br>   • Repeat 5 times<br>   → Calms your nervous system<br><br>3️⃣ <strong>Cold Water Shock</strong><br>   • Splash cold water on face<br>   • Or hold ice cube<br>   • Or take cold shower<br>   → Triggers vagus nerve (instant calm)<br><br><strong>For Long-Term Healing:</strong><br><br>✅ <strong>Talk to Someone</strong><br>   • Therapist/counselor (professional)<br>   • Trusted friend (emotional)<br>   • Parent/guardian (support)<br>   • School counselor (free)<br>   • Crisis line: AASRA (9820466726) or iCall (9152987821)<br><br>✅ <strong>Sri Keshav's Daily Routine</strong><br>   • Morning: Meditate + Om chanting (10 min)<br>   • Move: Walk, exercise (30 min)<br>   • Connect: Call a real friend (not text)<br>   • Create: Journaling, art, music<br>   • Night: Sleep early (no screens 1 hour before)<br><br>✅ <strong>What Helps vs. What Doesn't</strong><br>   ✓ Talking about it (vs. bottling up)<br>   ✓ Moving your body (vs. staying in bed)<br>   ✓ Real friendships (vs. social media)<br>   ✓ Professional help (vs. self-diagnosing on Google)<br>   ✓ Self-compassion (vs. self-judgment)<br><br><strong>What NOT To Do:</strong><br>   ❌ Use alcohol/drugs (temporary escape, long-term trap)<br>   ❌ Isolate yourself (loneliness makes it worse)<br>   ❌ Blame yourself (you didn't cause this)<br>   ❌ Ignore it (it won't go away on its own)<br>   ❌ Compare with others ('They're fine' ≠ You're not)<br><br><strong>If You're Having Suicidal Thoughts:</strong><br>📞 <strong>CALL NOW:</strong><br>• AASRA: 9820466726<br>• iCall: 9152987821<br>• Vandrevala: 9999 666 555<br>• Speak to a trusted adult<br><br>Remember: This is your brain in crisis, NOT reality.<br>The pain is real, but temporary.<br>You matter. Your life has value.<br><br><strong>Sri Keshav's Promise:</strong><br>'Your pain will become your power. Your struggle will become your story. And someday, you'll help someone else through this same darkness. For now, just breathe. Just survive. Just reach out. 💙 You are worth it.'"
+      },
+      "genz_family": {
+        keywords: ["parents", "family", "conflict", "misunderstand", "generation gap", "they don't understand"],
+        response: "<strong>👨‍👩‍👧 Family Conflicts (Sri Keshav on Generation Gap)</strong><br><br><strong>Gen Z's Frustration:</strong> 'My parents don't understand me. They're stuck in the past.'<br><br><strong>Parents' Frustration:</strong> 'This generation is lost. No discipline, just screens.'<br><br><strong>Sri Keshav's Bridge:</strong> 'Both are right. And both are wrong.'<br><br><strong>From 'A Confused Youth on Their Prime':</strong><br>'The gap between generations isn't a war—it's a misunderstanding of different truths.'<br><br><strong>Where the Conflict Comes From:</strong><br><br>👵 <strong>Parents' World:</strong><br>   • Had fewer choices (limited options)<br>   • Had less information (no internet)<br>   • Respect authority (it wasn't questioned)<br>   • Success = Stability (job, marriage, kids)<br>   • Communication was face-to-face<br><br>📱 <strong>Gen Z's World:</strong><br>   • Infinite choices (paralyzing)<br>   • Information overload (conflicting)<br>   • Question everything (including authority)<br>   • Success = Passion + Impact + Freedom<br>   • Communication is digital<br><br><strong>Common Conflicts & Solutions:</strong><br><br>⚔️ <strong>CONFLICT 1: Career Pressure</strong><br>   Parent: 'Get an engineering/doctor degree!'<br>   You: 'I want to be an artist/creator/influencer'<br><br>   🕉️ Sri Keshav's Wisdom:<br>   • Your parents chose safety (their generation's need)<br>   • You're choosing fulfillment (your generation's need)<br>   • BOTH are valid<br>   • Solution: Show them you have a plan (not just a dream)<br>   • Compromise: 'Let me try for 2 years. If it doesn't work, I'll reconsider.'\<br><br>⚔️ <strong>CONFLICT 2: Phone/Screen Time</strong><br>   Parent: 'Stop being on your phone!'<br>   You: 'This is how my generation connects'<br><br>   🕉️ Sri Keshav's Wisdom:<br>   • They're right: 6+ hours is addiction<br>   • You're right: Digital connection is real<br>   • Solution: Set boundaries YOURSELF (don't wait for them to force)<br>   • Show responsibility, they'll trust you more<br><br>⚔️ <strong>CONFLICT 3: Relationship/Dating</strong><br>   Parent: 'No dating until you're 25/married!'<br>   You: 'I'm an adult and I decide'<br><br>   🕉️ Sri Keshav's Wisdom:<br>   • Their fear = You getting hurt (love-based)<br>   • Your independence = Valid<br>   • Solution: Keep conversations open (not secretive)<br>   • Introduce them when it's serious (reduces fear)<br>   • Show maturity through your choices<br><br><strong>Sri Keshav's 3-Step Communication:</strong><br><br>1️⃣ <strong>LISTEN First (Yes, really)</strong><br>   • Ask: 'Why is this important to you?'<br>   • Try to understand their fear<br>   • They'll be more open to listening<br><br>2️⃣ <strong>Explain Your View (Calmly, Not Angry)</strong><br>   • Don't argue, educate<br>   • Show them you've thought it through<br>   • Prove you're not being reckless<br><br>3️⃣ <strong>Find Middle Ground</strong><br>   • You don't need to win<br>   • You need to be understood<br>   • Sometimes compromise = wisdom<br><br><strong>What NOT To Do:</strong><br>   ❌ Blame them ('You ruined my life')<br>   ❌ Shut them out (secret life)<br>   ❌ Disrespect them (yes, they still deserve respect)<br>   ❌ Expect them to change overnight<br>   ❌ Give up on the relationship<br><br><strong>What TO Do:</strong><br>   ✅ Assume good intent (they love you)<br>   ✅ Communicate regularly (prevents explosion)<br>   ✅ Show them who you are (through actions)<br>   ✅ Be patient (they're learning too)<br>   ✅ Thank them (even for the hard stuff)<br><br><strong>Sri Keshav's Final Truth:</strong><br>'Your parents did their best with what they knew. You're doing your best with what you know. That's all anyone can do. Bridge the gap with love, not judgment. 💙'"
+      }
+    };
+
+    // ========== API FUNCTIONS ==========
+    async function fetchFromOpenAI(userMessage) {
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: typeof OPENAI_MODEL !== 'undefined' ? OPENAI_MODEL : 'gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'system',
+                content: typeof SYSTEM_PROMPT !== 'undefined' ? SYSTEM_PROMPT : 'You are Solalogic, a wisdom guide for AdhyatamBuzz.'
+              },
+              {
+                role: 'user',
+                content: userMessage
+              }
+            ],
+            temperature: 0.7,
+            max_tokens: 300
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error('OpenAI API error:', error);
+          throw new Error(error.error?.message || 'OpenAI API error');
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+      } catch (error) {
+        console.error('OpenAI Error:', error);
+        return null;
+      }
+    }
+
+    async function fetchFromGemini(userMessage) {
+      try {
+        const systemPrompt = typeof SYSTEM_PROMPT !== 'undefined' ? SYSTEM_PROMPT : 'You are Solalogic, a wisdom guide for AdhyatamBuzz.';
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `${systemPrompt}\n\nUser question: ${userMessage}`
+                  }
+                ]
+              }
+            ],
+            generationConfig: {
+              maxOutputTokens: 300,
+              temperature: 0.7
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error('Gemini API error:', error);
+          throw new Error(error.error?.message || 'Gemini API error');
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      } catch (error) {
+        console.error('Gemini Error:', error);
+        return null;
+      }
+    }
+
+    // ========== HELPER FUNCTIONS ==========
+    function extractRelevance(userMessage) {
+      const lowerMessage = userMessage.toLowerCase();
+      let bestMatch = null;
+      let maxScore = 0;
+
+      for (const [key, content] of Object.entries(knowledgeBase)) {
+        let score = 0;
+        content.keywords.forEach(keyword => {
+          if (lowerMessage.includes(keyword)) {
+            score += 1;
+          }
+        });
+        if (score > maxScore) {
+          maxScore = score;
+          bestMatch = content;
+        }
+      }
+
+      return maxScore >= 1 ? bestMatch : null;
+    }
+
+    function addMessage(text, isUser) {
+      const container = document.getElementById('messagesContainer');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      contentDiv.innerHTML = text;
+      
+      messageDiv.appendChild(contentDiv);
+      container.appendChild(messageDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function showTyping() {
+      const container = document.getElementById('messagesContainer');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message bot';
+      typingDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+      typingDiv.id = 'typingIndicator';
+      container.appendChild(typingDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById('typingIndicator');
+      if (typing) typing.remove();
+    }
+
+    // ========== MAIN MESSAGE HANDLER ==========
+    async function sendMessage(customText = null) {
+      const input = document.getElementById('userInput');
+      const message = customText || input.value.trim();
+      
+      if (!message) return;
+
+      // Clear welcome message if first message
+      const welcomeMsg = document.querySelector('.welcome-message');
+      if (welcomeMsg) welcomeMsg.remove();
+
+      // Add user message
+      addMessage(message, true);
+      input.value = '';
+
+      // Show typing indicator
+      showTyping();
+
+      try {
+        let botResponse = null;
+
+        // Try to get response from AI APIs
+        if (preferredAPI === 'openai' && OPENAI_API_KEY) {
+          botResponse = await fetchFromOpenAI(message);
+        } else if (preferredAPI === 'gemini' && GEMINI_API_KEY) {
+          botResponse = await fetchFromGemini(message);
+        }
+
+        // Fallback to local knowledge base if API fails
+        if (!botResponse) {
+          const match = extractRelevance(message);
+          botResponse = match ? match.response : null;
+        }
+
+        removeTyping();
+
+        if (botResponse) {
+          addMessage(botResponse, false);
+        } else {
+          addMessage(
+            `<strong>I appreciate your question! 🙏</strong><br><br>I can answer questions about Sri keshav books and spiritual wisdom. Your question doesn't seem to relate to the content I have access to.<br><br>Try asking about:<br>• Finding clarity and stillness<br>• Authentic voice and genuine expression<br>• Spiritual growth and wisdom<br>• Youth thoughts and AdhyatamBuzz<br>• Overcoming confusion`,
+            false
+          );
+        }
+      } catch (error) {
+        console.error('Message sending error:', error);
+        removeTyping();
+        addMessage('<strong>⚠️ Error</strong><br>Sorry, I encountered an issue. Please try again.', false);
+      }
+    }
+
+    // Initialize
+    checkAPIsConfiguration();
+    document.getElementById('userInput').focus();
+  </script>
+
+  <script>
+    // Configuration guide comment
+    const API_SETUP_GUIDE = `
+    ╔═════════════════════════════════════════════════════════════╗
+    ║ SETUP YOUR AI CHATBOT - Add API Keys to Use AI Responses    ║
+    ╚═════════════════════════════════════════════════════════════╝
+
+    Option 1: OpenAI API (GPT-3.5 / GPT-4)
+    ─────────────────────────────────────
+    1. Go to https://platform.openai.com/api-keys
+    2. Create an API key
+    3. In chatbot.html, find: const OPENAI_API_KEY = ''
+    4. Paste your key: const OPENAI_API_KEY = 'sk-...'
+
+    Option 2: Google Gemini API (Free Tier Available)
+    ──────────────────────────────────────────────────
+    1. Go to https://aistudio.google.com/app/apikey
+    2. Create or copy your API key
+    3. In chatbot.html, find: const GEMINI_API_KEY = ''
+    4. Paste your key: const GEMINI_API_KEY = 'AIzaSy...'
+
+    How It Works:
+    ─────────────
+    • Without API keys: Uses local knowledge base (predefined answers)
+    • With OpenAI: Uses GPT for intelligent book-related responses
+    • With Gemini: Uses Google's Gemini for intelligent responses
+    • Automatic fallback: If API fails, uses local knowledge base
+
+    Security Note:
+    ──────────────
+    ⚠️  NEVER share your API keys publicly
+    ⚠️  Use environment variables in production
+    ⚠️  Add API key restrictions on your provider dashboard
+    `;
+  </script>
+</body>
+</html>
