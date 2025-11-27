@@ -199,6 +199,92 @@ const Forms = (function () {
     return { ok: res.ok, status: res.status, json };
   }
 
+  function showModal(type, title, message, autoClose = true, duration = 3000) {
+    // type can be: 'success', 'error', 'info', 'warning'
+    const gradients = {
+      success: 'linear-gradient(135deg, #00f5ff, #ff5aa6)',
+      error: 'linear-gradient(135deg, #ff5aa6, #ff1744)',
+      info: 'linear-gradient(135deg, #00f5ff, #0ea5ff)',
+      warning: 'linear-gradient(135deg, #ffa500, #ff6b00)'
+    };
+
+    const icons = {
+      success: '✨ 🎉',
+      error: '❌ ⚠️',
+      info: 'ℹ️ 💡',
+      warning: '⚠️ 🔔'
+    };
+
+    const gradient = gradients[type] || gradients.info;
+    const icon = icons[type] || '💬';
+
+    const modalHTML = `
+      <div id="alert-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.3s ease-out;">
+        <div style="background: linear-gradient(135deg, rgba(15, 24, 41, 0.95), rgba(20, 32, 51, 0.9)); border: 1px solid rgba(0, 245, 255, 0.3); border-radius: 2rem; padding: 3rem 2rem; max-width: 500px; width: 90%; box-shadow: 0 30px 80px rgba(0, 245, 255, 0.2), 0 0 60px rgba(0, 245, 255, 0.1); backdrop-filter: blur(10px); animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative;">
+          
+          <!-- Decorative top glow -->
+          <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: radial-gradient(circle, rgba(0, 245, 255, 0.4), transparent); border-radius: 50%; pointer-events: none;"></div>
+          
+          <!-- Title -->
+          <h2 style="font-size: 1.8rem; font-weight: 800; background: ${gradient}; -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 1rem; text-align: center;">
+            ${title}
+          </h2>
+          
+          <!-- Message -->
+          <p style="font-size: 1rem; color: #f7f9fb; line-height: 1.8; text-align: center; margin-bottom: 2rem;">
+            ${message}
+          </p>
+          
+          <!-- Icon animation -->
+          <div style="text-align: center; margin-bottom: 2rem; font-size: 3rem;">
+            ${icon}
+          </div>
+          
+          <!-- Close button -->
+          <button onclick="document.getElementById('alert-modal-overlay').remove()" style="width: 100%; padding: 1rem; background: ${gradient}; color: #141829; border: none; border-radius: 1rem; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 12px 40px rgba(0, 245, 255, 0.3); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" onmouseover="this.style.boxShadow='0 16px 48px rgba(0, 245, 255, 0.4)'; this.style.transform='translateY(-3px) scale(1.02)';" onmouseout="this.style.boxShadow='0 12px 40px rgba(0, 245, 255, 0.3)'; this.style.transform='translateY(0) scale(1)';">
+            Got it! 👍
+          </button>
+          
+          <!-- Bottom accent line -->
+          <div style="margin-top: 1.5rem; height: 2px; background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.5), transparent); border-radius: 1px;"></div>
+        </div>
+      </div>
+      
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    if (autoClose) {
+      setTimeout(() => {
+        const overlay = document.getElementById('alert-modal-overlay');
+        if (overlay) {
+          overlay.style.animation = 'fadeOut 0.3s ease-out forwards';
+          setTimeout(() => overlay.remove(), 300);
+        }
+      }, duration);
+    }
+  }
+
   function showPremiumSuccessModal(title, message, name = '') {
     // Create modal HTML
     const modalHTML = `
@@ -293,7 +379,7 @@ const Forms = (function () {
         // Also try to submit to server
         const { ok, json } = await postJson('/youth-connect', formData);
         
-        alert('Your thought has been submitted successfully! Thank you for sharing.');
+        showModal('success', '✨ Success!', 'Your thought has been submitted successfully! Thank you for sharing.');
         form.reset();
         
         // Reload portfolio if it exists
@@ -301,7 +387,7 @@ const Forms = (function () {
       } catch (err) {
         console.error(err);
         // Still save locally even if server fails
-        alert('Your thought has been saved! Thank you for sharing.');
+        showModal('success', '💾 Saved!', 'Your thought has been saved! Thank you for sharing.');
       }
     });
   }
@@ -323,33 +409,33 @@ const Forms = (function () {
 
       // Validation
       if (!fullName) {
-        alert('❌ Please enter your full name');
+        showModal('error', 'Name Required', 'Please enter your full name', true, 2500);
         return;
       }
 
       if (!email) {
-        alert('❌ Please enter your email address');
+        showModal('error', 'Email Required', 'Please enter your email address', true, 2500);
         return;
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        alert('❌ Please enter a valid email address');
+        showModal('error', 'Invalid Email', 'Please enter a valid email address', true, 2500);
         return;
       }
 
       if (!password) {
-        alert('❌ Please enter a password');
+        showModal('error', 'Password Required', 'Please enter a password', true, 2500);
         return;
       }
 
       if (password.length < 6) {
-        alert('❌ Password must be at least 6 characters');
+        showModal('error', 'Password Too Short', 'Password must be at least 6 characters', true, 2500);
         return;
       }
 
       if (password !== confirmPassword) {
-        alert('❌ Passwords do not match');
+        showModal('error', 'Passwords Mismatch', 'Passwords do not match', true, 2500);
         return;
       }
 
@@ -364,7 +450,7 @@ const Forms = (function () {
         // Check if account exists
         const exists = accounts.some(acc => acc.email === email);
         if (exists) {
-          alert('❌ An account with this email already exists');
+          showModal('error', 'Email Exists', 'An account with this email already exists', true, 2500);
           return;
         }
 
@@ -403,7 +489,7 @@ const Forms = (function () {
 
       } catch (error) {
         console.error('Signup error:', error);
-        alert('❌ Error creating account: ' + error.message);
+        showModal('error', 'Account Creation Failed', 'Error: ' + error.message, true, 3000);
       }
     });
   }
@@ -420,7 +506,7 @@ const Forms = (function () {
       const remember = !!form.querySelector('[name="remember"]').checked;
 
       if (!email || !password) {
-        alert('❌ Please enter email and password');
+        showModal('error', 'Missing Credentials', 'Please enter email and password', true, 2500);
         return;
       }
 
@@ -452,12 +538,12 @@ const Forms = (function () {
           // Scroll after modal closes
           setTimeout(() => scrollToSection('auth'), 500);
         } else {
-          alert('❌ Invalid email or password');
+          showModal('error', 'Invalid Credentials', 'Invalid email or password', true, 2500);
         }
 
       } catch (error) {
         console.error('Sign in error:', error);
-        alert('❌ Error signing in: ' + error.message);
+        showModal('error', 'Sign In Failed', 'Error: ' + error.message, true, 3000);
       }
     });
   }
@@ -478,14 +564,14 @@ const Forms = (function () {
       try {
         const { ok, json } = await postJson('/donation', formData);
         if (ok) {
-          alert('Thank you for your donation! Redirecting to payment...');
+          showModal('success', '💳 Donation Received', 'Thank you for your donation! Redirecting to payment...', true, 2500);
           if (json.paymentUrl) window.location.href = json.paymentUrl;
         } else {
-          alert('Error: ' + (json.message || 'Failed to process donation'));
+          showModal('error', 'Donation Failed', (json.message || 'Failed to process donation'), true, 3000);
         }
       } catch (err) {
         console.error(err);
-        alert('Error processing donation. Please try again.');
+        showModal('error', 'Processing Error', 'Error processing donation. Please try again.', true, 2500);
       }
     });
   }
@@ -502,14 +588,14 @@ const Forms = (function () {
       const originalText = submitBtn.textContent;
 
       if (!email) {
-        alert('❌ Please enter your email address');
+        showModal('error', 'Email Required', 'Please enter your email address', true, 2500);
         return;
       }
 
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        alert('❌ Please enter a valid email address');
+        showModal('error', 'Invalid Email', 'Please enter a valid email address', true, 2500);
         return;
       }
 
@@ -520,7 +606,7 @@ const Forms = (function () {
         const accountExists = accounts.some(acc => acc.email === email);
 
         if (!accountExists) {
-          alert('❌ No account found with this email address');
+          showModal('error', 'Account Not Found', 'No account found with this email address', true, 2500);
           return;
         }
 
@@ -546,7 +632,7 @@ const Forms = (function () {
             console.log('✅ Password reset token created for:', email);
 
             // Show success message
-            alert('✨ Password reset instructions sent!\n\n📧 Check your email (or in this demo, use the token below):\n\nToken: ' + resetToken.substring(0, 15) + '...\n\nNote: In production, an actual email would be sent with a reset link.\n\n💡 For demo purposes, you can create a new password by signing in again.');
+            showModal('success', '📧 Reset Email Sent', 'Password reset instructions have been sent! In demo mode, the token is: ' + resetToken.substring(0, 15) + '...', true, 4000);
 
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -564,7 +650,7 @@ const Forms = (function () {
 
           } catch (error) {
             console.error('Reset email sending error:', error);
-            alert('❌ Error sending reset email: ' + error.message);
+            showModal('error', 'Reset Failed', 'Error: ' + error.message, true, 3000);
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
           }
@@ -572,7 +658,7 @@ const Forms = (function () {
 
       } catch (error) {
         console.error('Forgot password error:', error);
-        alert('❌ Error: ' + error.message);
+        showModal('error', 'Error', 'Error: ' + error.message, true, 2500);
       }
     });
   }
