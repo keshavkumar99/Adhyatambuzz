@@ -33,6 +33,9 @@
   /* transition tokens used by theme utility */
   --transition-fast: 220ms;
   --transition-slow: 420ms;
+  
+  /* Force dark theme - ignore system light mode preference */
+  color-scheme: dark;
 }
 
 /* -------------------------

@@ -6,10 +6,3 @@ node_modules/
 dist/
 build/
 .vscode/settings.json
-*.mp3
-*.pdf
-*.png
-*.jpeg
-api-config.js
-firebase-config.js
-newsletter-config.js
