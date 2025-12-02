@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="theme-color" content="#0a1325">
+  <title>AdhyatamBuzz Dashboard - Community Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/jpeg" href="your-logo.jpeg" />
+  <link rel="stylesheet" href="styles.css?v=4.9" />
+  <style>
+    /* CRITICAL: Override before CSS loads */
+    @media (prefers-color-scheme: light) {
+      html, body {
+        background: radial-gradient(1200px 600px at 10% 10%, rgba(10, 35, 65, 0.45), transparent 12%),
+          radial-gradient(900px 400px at 95% 90%, rgba(255, 90, 150, 0.07), transparent 8%),
+          linear-gradient(180deg, #0a1325 0%, #152d52 40%, #0f2844 100%) !important;
+        color: #f7f9fb !important;
+        background-attachment: fixed !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Music -->
+  <audio 
+    id="bgMusic"
+    loop 
+    style="display: none;"
+    autoplay>
+    <source src="CLEAR MIND  Immersive Deep Ambient Tones for Mindful Meditation (432Hz) - Zen Celesta (youtube).mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Set background music volume to very soft (10%)
+    document.addEventListener('DOMContentLoaded', function() {
+      const audio = document.getElementById('bgMusic');
+      if (audio) {
+        audio.volume = 0.1;
+        audio.play().catch(err => {
+          console.log('Autoplay blocked by browser');
+        });
+      }
+    });
+
+    // Allow user to start music on first interaction
+    document.addEventListener('click', function startMusic() {
+      const audio = document.getElementById('bgMusic');
+      if (audio && audio.paused) {
+        audio.volume = 0.1;
+        audio.play().catch(err => console.log('Cannot play audio'));
+      }
+      document.removeEventListener('click', startMusic);
+    }, { once: true });
+
+    // Check if user is logged in
+    function checkUserAccess() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (!currentUser) {
+        // Redirect to home page if not logged in
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', checkUserAccess);
+  </script>
+
+  <div class="page">
+    <!-- NAVBAR -->
+    <header>
+      <nav class="nav">
+        <div class="logo">
+          <div class="logo-orb">
+            <img src="your-logo.jpeg" alt="AdhyatamBuzz logo" class="logo-img" />
+          </div>
+          <div>
+            <div class="logo-text-main">AdhyatamBuzz</div>
+            <div class="logo-text-sub">Youth thought to living book</div>
+          </div>
+        </div>
+
+        <a href="chatbot.html" class="sun-link" style="margin-left: auto; display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.5rem; background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 90, 150, 0.08)); border: 1px solid rgba(0, 245, 255, 0.3); border-radius: 1rem; transition: all 0.3s ease; backdrop-filter: blur(10px);" onmouseover="this.style.background='linear-gradient(135deg, rgba(0, 245, 255, 0.15), rgba(255, 90, 150, 0.12))'; this.style.borderColor='rgba(0, 245, 255, 0.5)'; this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 40px rgba(0, 245, 255, 0.2)';" onmouseout="this.style.background='linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 90, 150, 0.08))'; this.style.borderColor='rgba(0, 245, 255, 0.3)'; this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+          <span class="sun-rays"></span>
+          <span class="sun-emoji" style="font-size: 1.2rem;">☀️</span>
+          <span style="font-weight: 600; font-size: 0.95rem; background: linear-gradient(135deg, #00f5ff, #ff5aa6); -webkit-background-clip: text; background-clip: text; color: transparent;">solalogic AI</span>
+        </a>
+
+        <button class="hamburger" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-links" id="navLinks">
+          <a href="index.html#home">Home</a>
+          <a href="#showcase">Youth portfolio</a>
+          <a href="#bookshelf">Bookshelf</a>
+          <a href="#youth-connect">Connect Thought</a>
+          <a href="#about">About Sri Keshav</a>
+          <a href="#" onclick="logoutUser()" style="color: #ff5aa6; font-weight: 600;">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Premium Dashboard Header -->
+    <div style="position: relative; overflow: hidden; padding: 3rem 2rem; background: linear-gradient(180deg, rgba(0, 245, 255, 0.08), rgba(255, 90, 150, 0.05)); border-bottom: 2px solid rgba(0, 245, 255, 0.2); text-align: center;">
+      <div style="position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 245, 255, 0.1), transparent); border-radius: 50%; pointer-events: none; animation: float 15s ease-in-out infinite;"></div>
+      <div style="position: absolute; bottom: -30%; left: -5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(255, 90, 150, 0.08), transparent); border-radius: 50%; pointer-events: none; animation: float 20s ease-in-out infinite reverse;"></div>
+      
+      <div style="position: relative; z-index: 1; max-width: 900px; margin: 0 auto;">
+        <div style="font-size: 0.9rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem;">✨ Welcome Back</div>
+        <h1 style="font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #00f5ff 0%, #ff5aa6 50%, #7c6cff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 1rem; text-shadow: 0 0 40px rgba(0, 245, 255, 0.15);">Your Dashboard</h1>
+        <p style="font-size: 1.1rem; color: var(--text); max-width: 700px; margin: 0 auto; line-height: 1.8; font-weight: 500;">
+          Your personal hub where thoughts transform into wisdom, connections flourish, and your authentic voice finds its audience. 🌟
+        </p>
+      </div>
+    </div>
+
+    <main>
+      <!-- ABOUT SECTION -->
+      <section id="about" style="position: relative; overflow: hidden; padding: 4rem 2rem;">
+        <!-- Premium animated background -->
+        <div style="position: absolute; top: -30%; right: -10%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(0, 245, 255, 0.06) 0%, transparent 70%); border-radius: 50%; pointer-events: none; animation: float 15s ease-in-out infinite;"></div>
+        <div style="position: absolute; bottom: -20%; left: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255, 90, 150, 0.05) 0%, transparent 70%); border-radius: 50%; pointer-events: none; animation: float 20s ease-in-out infinite reverse;"></div>
+
+        <div class="section-heading" style="position: relative; z-index: 1;">
+          <div>
+            <div class="section-kicker">✨ About</div>
+            <h2 class="section-title">Sri Keshav</h2>
+          </div>
+          <p class="section-desc">
+            the guy who gets it—connecting ur chaotic Gen Z energy w/ ancient wisdom that actually slaps 🔥 literally spent decades just listening to u all, then spent years turning ur mess into masterpieces. tldr: keeping it 100% real, no cap.
+          </p>
+        </div>
+
+        <div style="position: relative; z-index: 1; max-width: 1300px; margin: 0 auto;">
+          <!-- Premium Profile Section -->
+          <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: start; margin-bottom: 4rem;">
+            <!-- Profile Card - Premium -->
+            <div style="position: sticky; top: 2rem;">
+              <div style="padding: 2rem; background: linear-gradient(135deg, rgba(0, 245, 255, 0.12), rgba(255, 90, 150, 0.08)); border: 2px solid rgba(0, 245, 255, 0.3); border-radius: 2rem; backdrop-filter: blur(15px); box-shadow: 0 30px 80px rgba(0, 245, 255, 0.15), 0 0 60px rgba(0, 245, 255, 0.05), inset 0 1px 20px rgba(255, 255, 255, 0.05); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden;" onmouseover="this.style.boxShadow='0 50px 120px rgba(0, 245, 255, 0.2), 0 0 80px rgba(0, 245, 255, 0.08), inset 0 1px 20px rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(-10px)'; this.style.borderColor='rgba(0, 245, 255, 0.5)';" onmouseout="this.style.boxShadow='0 30px 80px rgba(0, 245, 255, 0.15), 0 0 60px rgba(0, 245, 255, 0.05), inset 0 1px 20px rgba(255, 255, 255, 0.05)'; this.style.transform='translateY(0)'; this.style.borderColor='rgba(0, 245, 255, 0.3)';">
+                
+                <!-- Animated background gradient -->
+                <div style="position: absolute; top: -50%; right: -50%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(0, 245, 255, 0.15), transparent); border-radius: 50%; pointer-events: none; animation: floatSlow 8s ease-in-out infinite;"></div>
+                <div style="position: absolute; bottom: -50%; left: -50%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255, 90, 150, 0.1), transparent); border-radius: 50%; pointer-events: none; animation: floatSlow 10s ease-in-out infinite reverse;"></div>
+
+                <div style="text-align: center; position: relative; z-index: 2;">
+                  <!-- Premium Profile Image -->
+                  <div style="position: relative; width: 300px; height: 300px; margin: 0 auto 2rem; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 12px rgba(0, 245, 255, 0.3), 0 0 0 14px rgba(0, 245, 255, 0.15), 0 40px 100px rgba(0, 245, 255, 0.25); animation: profilePulse 4s ease-in-out infinite;">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0, 245, 255, 0.15), rgba(255, 90, 150, 0.15)); z-index: 10; mix-blend-mode: overlay;"></div>
+                    <img src="profile.jpeg" alt="Sri Keshav" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(1.08) contrast(1.15); transition: filter 0.3s ease;" onmouseover="this.style.filter='brightness(1.15) contrast(1.2) saturate(1.1)';" onmouseout="this.style.filter='brightness(1.08) contrast(1.15)';" />
+                  </div>
+
+                  <!-- Name & Title with glow -->
+                  <div style="position: relative; padding-bottom: 1rem; border-bottom: 2px solid rgba(0, 245, 255, 0.2);">
+                    <h3 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #00f5ff, #ff5aa6); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.3rem; text-shadow: 0 0 30px rgba(0, 245, 255, 0.2);">Sri Keshav</h3>
+                    <p style="font-size: 0.9rem; color: var(--accent); font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0;">🎯 Seeker & Awaker</p>
+                  </div>
+
+                  <!-- CTA Button - Premium Enhanced -->
+                  <button class="btn btn-primary" style="width: 100%; margin-top: 1.8rem; padding: 1.1rem 1.5rem; font-size: 0.95rem; background: linear-gradient(135deg, #00f5ff, #ff5aa6, #7c6cff); box-shadow: 0 15px 45px rgba(0, 245, 255, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.25), 0 0 30px rgba(0, 245, 255, 0.1); position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800;" onmouseover="this.style.boxShadow='0 20px 60px rgba(0, 245, 255, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.15)'; this.style.transform='translateY(-4px) scale(1.03)';" onmouseout="this.style.boxShadow='0 15px 45px rgba(0, 245, 255, 0.3), inset 0 1px 3px rgba(255, 255, 255, 0.25), 0 0 30px rgba(0, 245, 255, 0.1)'; this.style.transform='translateY(0) scale(1)';" onclick="scrollToSection('youth-connect')">
+                    <span style="position: relative; z-index: 2;">💭 Share Your Thought</span>
+                    <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent); animation: shimmerBtn 3s infinite;"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Section - Premium -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+              <!-- Main Bio -->
+              <div style="padding: 2rem; background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(255, 90, 150, 0.03)); border: 1px solid var(--border); border-radius: 1.2rem; backdrop-filter: blur(10px);">
+                <div style="font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">📖 The Story</div>
+                <p style="font-size: 1rem; color: var(--text); margin-bottom: 1rem; line-height: 1.9; font-weight: 500;">
+                  AdhyatamBuzz grew from a simple insight: <span style="color: var(--accent); font-weight: 700;">Gen Z doesn't need more noise. They just need a place where their voice feels real.</span>
+                </p>
+                <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.8;">
+Sri Keshav created this space as a calm corner for young minds. It's where late-night thoughts can turn into shared wisdom, where personal reflections slowly become chapters worth keeping, and where every honest voice is welcomed, shaped, and lifted so it can reach the world.                </p>
+              </div>
+
+              <!-- What He Does -->
+              <div style="padding: 2rem; background: linear-gradient(135deg, rgba(255, 90, 150, 0.05), rgba(0, 245, 255, 0.03)); border: 1px solid var(--border); border-radius: 1.2rem; backdrop-filter: blur(10px);">
+                <div style="font-size: 0.85rem; color: var(--accent-2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">🎯 What He Does</div>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 1rem;">
+                  <li style="display: flex; gap: 1rem; align-items: start;">
+                    <span style="font-size: 1.2rem; min-width: 30px; text-align: center;">📝</span>
+                    <div>
+                      <p style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Listens Deeply</p>
+                      <p style="font-size: 0.85rem; color: var(--muted);">Hears your confusion, validates your questions, respects your journey.</p>
+                    </div>
+                  </li>
+                  <li style="display: flex; gap: 1rem; align-items: start;">
+                    <span style="font-size: 1.2rem; min-width: 30px; text-align: center;">✨</span>
+                    <div>
+                      <p style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Refines Brilliantly</p>
+                      <p style="font-size: 0.85rem; color: var(--muted);">Takes raw thoughts and crafts them into polished essays and meaningful wisdom.</p>
+                    </div>
+                  </li>
+                  <li style="display: flex; gap: 1rem; align-items: start;">
+                    <span style="font-size: 1.2rem; min-width: 30px; text-align: center;">📚</span>
+                    <div>
+                      <p style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Creates Living Books</p>
+                      <p style="font-size: 0.85rem; color: var(--muted);">Transforms collective youth insights into timeless books and talks.</p>
+                    </div>
+                  </li>
+                  <li style="display: flex; gap: 1rem; align-items: start;">
+                    <span style="font-size: 1.2rem; min-width: 30px; text-align: center;">🌍</span>
+                    <div>
+                      <p style="font-weight: 600; color: var(--text); margin-bottom: 0.2rem;">Amplifies Voices</p>
+                      <p style="font-size: 0.85rem; color: var(--muted);">Ensures your authentic voice is shared, celebrated, and remembered.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHOWCASE -->
+      <section id="showcase">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">Youth portfolio</div>
+            <h2 class="section-title">Real thoughts from real voices.</h2>
+          </div>
+          <p class="section-desc">
+            Thoughts submitted by Gen Z and Gen Alpha minds. Each number represents a voice heard, respected, and being shaped into something meaningful.
+          </p>
+        </div>
+
+        <div class="portfolio-stats">
+          <div class="stat-card">
+            <div class="stat-number" id="total-thoughts">1051</div>
+            <div class="stat-label">Thoughts Shared</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="unique-voices">0</div>
+            <div class="stat-label">Unique Voices</div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" id="portfolio-grid">
+          <!-- Portfolio cards will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- BOOKSHELF -->
+      <section id="bookshelf">
+        <div class="section-heading">
+          <div>
+            <div class="section-kicker">Bookshelf</div>
+            <h2 class="section-title">Where your thoughts land as pages.</h2>
+          </div>
+          <p class="section-desc">
+            A growing shelf of physical and digital books that carry collective youth reflections, edited and guided by Sri Keshav.
+          </p>
+        </div>
+
+        <div class="shelf-row">
+          <div class="book-card premium-book" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(255, 90, 150, 0.08)); border: 1px solid rgba(0, 245, 255, 0.2); border-radius: 1.2rem; padding: 1.5rem; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(0, 245, 255, 0.1);" onmouseover="this.style.transform='translateY(-12px) scale(1.02)'; this.style.boxShadow='0 40px 100px rgba(0, 245, 255, 0.2), 0 0 40px rgba(0, 245, 255, 0.15)'; this.style.borderColor='rgba(0, 245, 255, 0.4)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 20px 60px rgba(0, 245, 255, 0.1)'; this.style.borderColor='rgba(0, 245, 255, 0.2)';">
+            <img src="cover..jpeg" alt="Rectification Within Itself" class="book-cover" style="width: 100%; height: 280px; object-fit: cover; border-radius: 0.8rem; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); margin-bottom: 1.2rem; position: relative; z-index: 1; transition: all 0.3s ease;">
+            <div class="book-title" style="font-size: 1.2rem; font-weight: 700; color: #00f5ff; margin-bottom: 0.8rem; position: relative; z-index: 1;">Rectification Within Itself</div>
+            <div class="book-meta" style="font-size: 0.9rem; color: #b5bcc8; line-height: 1.6; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+              A quiet journey of inner repair. Written by Sri Keshav, inspired by lived questions.
+            </div>
+            <button class="book-download-btn" onclick="downloadBook('Rectification Within Itself')" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #00f5ff, #ff5aa6); color: #141829; border: none; border-radius: 0.7rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(0, 245, 255, 0.3); position: relative; z-index: 1;" onmouseover="this.style.boxShadow='0 16px 48px rgba(0, 245, 255, 0.4)'; this.style.transform='translateY(-3px) scale(1.05)';" onmouseout="this.style.boxShadow='0 10px 30px rgba(0, 245, 255, 0.3)'; this.style.transform='translateY(0) scale(1)';">
+              <span>📥</span> Download PDF
+            </button>
+          </div>
+
+          <div class="book-card premium-book" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(255, 90, 150, 0.1), rgba(0, 245, 255, 0.08)); border: 1px solid rgba(255, 90, 150, 0.2); border-radius: 1.2rem; padding: 1.5rem; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(255, 90, 150, 0.1);" onmouseover="this.style.transform='translateY(-12px) scale(1.02)'; this.style.boxShadow='0 40px 100px rgba(255, 90, 150, 0.2), 0 0 40px rgba(255, 90, 150, 0.15)'; this.style.borderColor='rgba(255, 90, 150, 0.4)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 20px 60px rgba(255, 90, 150, 0.1)'; this.style.borderColor='rgba(255, 90, 150, 0.2)';">
+            <img src="brown and beige illustrated world poetry day instagram post.png" alt="A Confused Youth on Their Prime" class="book-cover" style="width: 100%; height: 280px; object-fit: cover; border-radius: 0.8rem; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); margin-bottom: 1.2rem; position: relative; z-index: 1; transition: all 0.3s ease;">
+            <div class="book-title" style="font-size: 1.2rem; font-weight: 700; color: #ff5aa6; margin-bottom: 0.8rem; position: relative; z-index: 1;">A Confused Youth on Their Prime</div>
+            <div class="book-meta" style="font-size: 0.9rem; color: #b5bcc8; line-height: 1.6; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+              A story of finding direction when everything feels overwhelming.
+            </div>
+            <button class="book-download-btn" onclick="downloadBook('A Confused Youth on Their Prime')" style="width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #ff5aa6, #00f5ff); color: #141829; border: none; border-radius: 0.7rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 30px rgba(255, 90, 150, 0.3); position: relative; z-index: 1;" onmouseover="this.style.boxShadow='0 16px 48px rgba(255, 90, 150, 0.4)'; this.style.transform='translateY(-3px) scale(1.05)';" onmouseout="this.style.boxShadow='0 10px 30px rgba(255, 90, 150, 0.3)'; this.style.transform='translateY(0) scale(1)';">
+              <span>📥</span> Download PDF
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- YOUTH CONNECT -->
+      <section id="youth-connect" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50%; right: -10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 245, 255, 0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -30%; left: -5%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255, 90, 150, 0.06) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+
+        <div class="section-heading" style="position: relative; z-index: 1;">
+          <div>
+            <div class="section-kicker">✍️ Connect Thought</div>
+            <h2 class="section-title">Your voice matters. Share it here.</h2>
+          </div>
+          <p class="section-desc">
+            nah fr this ain't Instagram or Twitter vibes 💀 zero clout chasing, zero algorithm chaos. just a real space where ur thoughts get heard, respected, and literally turned into something that changes the game 🔥
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1100px; margin: 3rem auto; align-items: stretch; position: relative; z-index: 1; padding: 0 2rem;">
+          <!-- Left side: Purpose & Benefits -->
+          <div style="display: flex; flex-direction: column; justify-content: center; gap: 2rem;">
+            <div style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(255, 90, 150, 0.05)); padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--border); backdrop-filter: blur(10px);">
+              <div style="font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem;">💭 The Mission</div>
+              <p style="font-size: 0.95rem; color: var(--text); line-height: 1.8; margin-bottom: 1rem; font-weight: 500;">
+                Yo, this is literally your safe space to vent fr fr. Write however you want—no cap, no filter, no grammar police. Just real thoughts, no sugar-coating. We read it, vibe with it, and turn your raw energy into chapters that actually hit different.
+              </p>
+              <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.7;">
+                Your unpolished thoughts? That's the whole point bestie. Messy, honest, real—that's what becomes the dopest wisdom.
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div style="padding: 1rem; background: rgba(0, 245, 255, 0.05); border: 1px solid var(--border); border-radius: 0.8rem; text-align: center;">
+                <div style="font-size: 1.4rem; margin-bottom: 0.3rem;">📝</div>
+                <p style="font-size: 0.8rem; color: var(--text); font-weight: 600;">Raw Thoughts</p>
+                <p style="font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem;">No pressure to be perfect</p>
+              </div>
+              <div style="padding: 1rem; background: rgba(255, 90, 150, 0.05); border: 1px solid var(--border); border-radius: 0.8rem; text-align: center;">
+                <div style="font-size: 1.4rem; margin-bottom: 0.3rem;">📚</div>
+                <p style="font-size: 0.8rem; color: var(--text); font-weight: 600;">Living Books</p>
+                <p style="font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem;">Become chapters & stories</p>
+              </div>
+            </div>
+
+            <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(0, 245, 255, 0.06), rgba(255, 90, 150, 0.06)); border: 1px solid var(--border); border-radius: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem;">🎯 What happens next</div>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.7rem;">
+                <li style="font-size: 0.85rem; color: var(--text); display: flex; gap: 0.6rem; align-items: start;"><span style="color: var(--accent); font-weight: 700; min-width: 20px;">→</span> <span>Short articles or notes are welcome</span></li>
+                <li style="font-size: 0.85rem; color: var(--text); display: flex; gap: 0.6rem; align-items: start;"><span style="color: var(--accent); font-weight: 700; min-width: 20px;">→</span> <span>Learning clips appear in motion form</span></li>
+                <li style="font-size: 0.85rem; color: var(--text); display: flex; gap: 0.6rem; align-items: start;"><span style="color: var(--accent); font-weight: 700; min-width: 20px;">→</span> <span>Selected thoughts become talks, reels & book chapters</span></li>
+              </ul>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+              <span class="tag" style="background: rgba(0, 245, 255, 0.1); border: 1px solid var(--accent); color: var(--accent);">Campus stories</span>
+              <span class="tag" style="background: rgba(0, 245, 255, 0.1); border: 1px solid var(--accent); color: var(--accent);">Late night questions</span>
+              <span class="tag" style="background: rgba(255, 90, 150, 0.1); border: 1px solid var(--accent-2); color: var(--accent-2);">Career confusion</span>
+              <span class="tag" style="background: rgba(255, 90, 150, 0.1); border: 1px solid var(--accent-2); color: var(--accent-2);">Spiritual curiosity</span>
+            </div>
+          </div>
+
+          <!-- Right side: Form -->
+          <div style="padding: 2rem; background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(255, 90, 150, 0.03)); border: 1px solid var(--border); border-radius: 1.2rem; backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(0, 245, 255, 0.08);">
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem;">📬 Quick Share</div>
+            <p class="hint" style="margin-bottom: 1.2rem; font-size: 0.9rem; color: var(--muted);">
+              Drop a thought as if texting a close friend. We'll read and respond through content.
+            </p>
+
+            <form data-form="youth-connect" style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">Name or nickname</label>
+                  <input type="text" name="name" placeholder="What should we call you?" required style="width: 100%; padding: 0.8rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); font-size: 0.9rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(0, 245, 255, 0.05)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'; this.style.borderColor='var(--border)';" />
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">Email or Instagram</label>
+                  <input type="text" name="email" placeholder="@yourhandle or email" required style="width: 100%; padding: 0.8rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); font-size: 0.9rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(0, 245, 255, 0.05)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'; this.style.borderColor='var(--border)';" />
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">Campus name</label>
+                  <input type="text" name="campus" placeholder="Your college / school name" style="width: 100%; padding: 0.8rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); font-size: 0.9rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(0, 245, 255, 0.05)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'; this.style.borderColor='var(--border)';" />
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">City</label>
+                  <input type="text" name="city" placeholder="Your city" style="width: 100%; padding: 0.8rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); font-size: 0.9rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(0, 245, 255, 0.05)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'; this.style.borderColor='var(--border)';" />
+                </div>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">Your thought</label>
+                <textarea name="thought" placeholder="Write what is real for you right now..." required style="width: 100%; padding: 0.8rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 0.6rem; color: var(--text); font-size: 0.9rem; min-height: 120px; resize: vertical; transition: all 0.3s ease; font-family: inherit;" onmouseover="this.style.background='rgba(0, 245, 255, 0.05)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='rgba(255, 255, 255, 0.02)'; this.style.borderColor='var(--border)';" ></textarea>
+              </div>
+
+              <div style="display: flex; gap: 0.8rem; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem;">
+                <span>✓ Your thought is safe</span>
+                <span>✓ Read with respect</span>
+                <span>✓ Might become part of something bigger</span>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem; margin-top: 0.5rem; font-size: 0.95rem; font-weight: 700;">
+                ✨ Submit to Youth Stream
+              </button>
+            </form>
+
+            <div id="youth-connect-status" style="margin-top: 1rem; padding: 0.8rem; border-radius: 0.6rem; display: none; text-align: center; font-size: 0.85rem; background: rgba(0, 245, 255, 0.1); color: var(--accent);"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer style="padding: 3rem 2rem; background: linear-gradient(180deg, transparent, rgba(0, 245, 255, 0.02)); border-top: 1px solid var(--border); margin-top: 4rem; text-align: center;">
+      <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 0.5rem;">
+        © 2025 AdhyatamBuzz | Sri Keshav's Wisdom Hub
+      </p>
+      <p style="color: var(--muted); font-size: 0.75rem;">
+        Turn your thoughts into living books. We listen, refine, and amplify your authentic voice.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    function logoutUser() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('rememberUser');
+      localStorage.removeItem('rememberedEmail');
+      showAlert('👋 Signed Out', 'You have been successfully signed out. See you soon!');
+      setTimeout(() => {
+        window.location.href = 'index.html#auth';
+        location.reload();
+      }, 2000);
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleMenu() {
+      const hamburger = document.querySelector('.hamburger');
+      const navLinks = document.getElementById('navLinks');
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    }
+
+    function downloadBook(bookName) {
+      showAlert('📥 Coming Soon', 'Book downloads coming soon! Check back later.');
+    }
+
+    // Load portfolio and other content
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load portfolio items
+      loadPortfolio();
+    });
+
+    function loadPortfolio() {
+      const portfolioGrid = document.getElementById('portfolio-grid');
+      if (!portfolioGrid) return;
+
+      const thoughts = JSON.parse(localStorage.getItem('youthThoughts') || '[]');
+      const uniqueCount = new Set(thoughts.map(t => t.email)).size;
+      
+      document.getElementById('unique-voices').textContent = uniqueCount;
+
+      // Display existing thoughts or demo content
+      if (thoughts.length > 0) {
+        portfolioGrid.innerHTML = thoughts.map((thought, i) => `
+          <article class="card">
+            <div class="card-tag">User Thought</div>
+            <div class="card-title">${thought.name || 'Anonymous'}</div>
+            <p class="card-text">${thought.thought.substring(0, 100)}...</p>
+            <div class="card-footer">
+              <span>${thought.city || 'Somewhere'}</span>
+              <span class="pill-soft">${thought.campus || 'Independent'}</span>
+            </div>
+          </article>
+        `).join('');
+      } else {
+        portfolioGrid.innerHTML = `
+          <article class="card">
+            <div class="preview-box">
+              <div class="preview-inner">Swipe style reel: "I am confused, but I am awake".</div>
+              <div class="preview-bars">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+              </div>
+            </div>
+            <div class="card-tag">Instagram reel</div>
+            <div class="card-title">Confusion to clarity loop</div>
+            <p class="card-text">Typography driven motion with gentle glow, perfect for youth timelines.</p>
+            <div class="card-footer">
+              <span>15 sec loop</span>
+              <span class="pill-soft">@adhyatambuzz</span>
+            </div>
+          </article>
+        `;
+      }
+    }
+  </script>
+
+  <!-- Newsletter Configuration & Scripts -->
+  <script src="newsletter-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
